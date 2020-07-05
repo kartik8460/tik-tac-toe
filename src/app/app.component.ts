@@ -8,7 +8,8 @@ import {ToastrService} from 'ngx-toastr';
 })
 export class AppComponent {
   title = 'tic-tac-toe';
-
+  isDraw: boolean = false;
+  numberOfClicks: number = 0;
   winMessage: string = '';
   isCross = false;
   itemArr: string[] = new Array(9).fill('empty');
@@ -16,13 +17,20 @@ export class AppComponent {
   constructor(private toastr: ToastrService) {}
 
   handleClick = (itemNumber: number) => {
+    this.numberOfClicks++;
+
+    if(this.isDraw || this.numberOfClicks === 8) {
+      this.winMessage = 'Match Draw';
+      this.isDraw = true;
+      return this.toastr.warning('Match Draw');
+    }
 
     if (this.winMessage) {
       return this.toastr.success(this.winMessage);
     }
 
     if (this.itemArr[itemNumber] !== 'empty') {
-      return this.toastr.warning('Already Filled');
+      return this.toastr.error('Already Filled');
     }
 
     this.itemArr[itemNumber] = this.isCross ? 'cross': 'circle';
@@ -87,6 +95,8 @@ export class AppComponent {
   reloadGame = () => {
     this.winMessage = '';
     this.isCross = false;
+    this.isDraw = false;
+    this.numberOfClicks = 0;
     this.itemArr = new Array(9).fill('empty');
   };
 }
